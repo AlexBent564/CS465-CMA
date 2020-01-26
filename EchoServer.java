@@ -5,64 +5,70 @@ import java.io.*;
  * EchoServer
  */
 public class EchoServer {
-    public static void  main(String arg[]) throws IOException
+    public static void  main(final String arg[]) throws IOException
 	{
         ServerSocket server = null;
         try {
+            // Starts the server up
             server = new ServerSocket(32000);
             server.setReuseAddress(true);
-            // The main thread is just accepting new connections
+            System.out.println("Server listening...");
+            // Server can accept new connections when they appear
             while (true) {
-                Socket client = server.accept();
+                final Socket client = server.accept();
                 System.out.println("New client connected " + client.getInetAddress().getHostAddress());
-                ClientHandler clientSock = new ClientHandler(client);
+                final EchoThread clientSock = new EchoThread(client);
  
-                // The background thread will handle each client separately
+                // Background thread will handle each client separately
                 new Thread(clientSock).start();
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         } finally {
             if (server != null) {
                 try {
                     server.close();
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     e.printStackTrace();
                 }
             }
         }
     }
 
-    private static class ClientHandler implements Runnable {
+    // Change ClientHandler to EchoThread before turning in
+    private static class EchoThread implements Runnable {
         private final Socket clientSocket;
  
-        public ClientHandler(Socket socket) {
+        public EchoThread(final Socket socket) {
             this.clientSocket = socket;
         }
  
         @Override
         public void run() {
-            PrintWriter out = null;
-            BufferedReader in = null;
+            PrintWriter toClient = null;
+            BufferedReader fromClient = null;
             try {
-                out = new PrintWriter(clientSocket.getOutputStream(), true);
-                in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                toClient = new PrintWriter(clientSocket.getOutputStream(), true);
+                fromClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String line;
-                while ((line = in.readLine()) != null) {
+                // Display what is being sent by client
+                while ((line = fromClient.readLine()) != null) {
                     System.out.printf("Sent from the client: %s\n", line);
-                    out.println(line);
+                    toClient.println(line);
                 }
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
             } finally {
                 try {
-                    if (out != null) {
-                        out.close();
+                    if (toClient != null) {
+                        toClient.close();
                     }
-                    if (in != null)
-                        in.close();
+                    if (fromClient != null)
+                        fromClient.close();
+                    // Client has disconnected from the server
+                    System.out.println("Client disconnecting...");
                     clientSocket.close();
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     e.printStackTrace();
                 }
             }
