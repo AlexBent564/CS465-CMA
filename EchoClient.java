@@ -11,15 +11,16 @@ public class EchoClient {
         String host = "127.0.0.1";
         int port = 32000;
         try (Socket socket = new Socket(host, port)) {
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter toClient = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader fromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             Scanner scanner = new Scanner(System.in);
             String line = null;
-            while (!"exit".equalsIgnoreCase(line)) {
+            // While client is still connected, read and display back what they send
+            while (!"quit".equalsIgnoreCase(line)) {
                 line = scanner.nextLine();
-                out.println(line);
-                out.flush();
-                System.out.println("Server replied " + in.readLine());
+                toClient.println(line);
+                toClient.flush();
+                System.out.println("Server replied " + fromClient.readLine());
             }
             scanner.close();
         } catch (IOException e) {
