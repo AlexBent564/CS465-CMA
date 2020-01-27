@@ -8,8 +8,10 @@ import java.util.*;
 public class EchoClient {
 
     public static void main(String[] args) {
+        // Initialize host and port variables
         String host = "127.0.0.1";
         int port = 32000;
+        // Create socket
         try (Socket socket = new Socket(host, port)) {
             PrintWriter toClient = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader fromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -22,6 +24,7 @@ public class EchoClient {
                 toClient.println(line);
                 toClient.flush();
                 String tempoString = fromClient.readLine();
+                // Client disconnects from server
                 if("quit".equalsIgnoreCase(tempoString)){
                     System.out.println("Disconected from server");
                     break;
