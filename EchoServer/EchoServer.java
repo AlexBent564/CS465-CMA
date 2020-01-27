@@ -35,7 +35,7 @@ public class EchoServer {
         }
     }
 
-    // Change ClientHandler to EchoThread before turning in
+    // EchoThread handles talking to the client
     private static class EchoThread implements Runnable {
         private final Socket clientSocket;
  
@@ -51,7 +51,7 @@ public class EchoServer {
                 toClient = new PrintWriter(clientSocket.getOutputStream(), true);
                 fromClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String line;
-                // Display what is being sent by client
+                // Display what is being sent by client to the server
                 while ((line = fromClient.readLine()) != null) {
                     System.out.printf("Sent from the client: %s\n", line);
                     String lineCheck = line.replaceAll("[^\\p{IsAlphabetic}]", "");
