@@ -54,7 +54,13 @@ public class EchoServer {
                 // Display what is being sent by client
                 while ((line = fromClient.readLine()) != null) {
                     System.out.printf("Sent from the client: %s\n", line);
-                    toClient.println(line);
+                    String lineCheck = line.replaceAll("[^\\p{IsAlphabetic}]", "");
+                    toClient.println(lineCheck);
+                    if("quit".equalsIgnoreCase(lineCheck)){
+                        break;
+                    }
+
+
                 }
             } catch (final IOException e) {
                 e.printStackTrace();
